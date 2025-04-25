@@ -23,5 +23,4 @@ def build_binary_dataset(data_dir="dataset", output_file="binary_dataset.txt"):
                         print(f"❌ Error processing image {img_path}: {e}")
     print("✅ binary_dataset.txt generated successfully!")
 
-if __name__ == "__main__":
-    build_binary_dataset()
+build_binary_dataset()
