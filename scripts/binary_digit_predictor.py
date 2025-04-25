@@ -19,8 +19,11 @@ def hamming_distance(s1, s2):
     return sum(a != b for a, b in zip(s1, s2))
 
 def predict_digit_from_binary(binary_input, dataset):
-    closest = min(dataset, key=lambda x: hamming_distance(x[0], binary_input))
-    return closest[1]
+    distances = [(x[1], hamming_distance(x[0], binary_input)) for x in dataset]
+    closest_label, min_distance = min(distances, key=lambda x: x[1])
+    max_distance = len(binary_input)
+    confidence = 1 - (min_distance / max_distance)
+    return closest_label, confidence
 
 class BinaryDigitPredictorApp:
     def __init__(self):
@@ -41,7 +44,7 @@ class BinaryDigitPredictorApp:
         tk.Button(self.button_frame, text="Predict", command=self.predict_digit, font=("Arial", 10, "bold")).grid(row=0, column=0, padx=10, pady=5)
         tk.Button(self.button_frame, text="Clear", command=self.clear_canvas, font=("Arial", 10, "bold")).grid(row=0, column=1, padx=10, pady=5)
 
-        self.result_label = tk.Label(self.window, text="Draw a digit and click Predict", font=("Arial", 10))
+        self.result_label = tk.Label(self.window, text="Draw a digit and click Predict", font=("Arial", 10, "bold"))
         self.result_label.pack(pady=5)
 
         self.canvas.bind("<B1-Motion>", self.draw)
@@ -62,8 +65,13 @@ class BinaryDigitPredictorApp:
 
     def predict_digit(self):
         binary = image_to_binary_string(self.image)
-        digit = predict_digit_from_binary(binary, self.dataset)
-        self.result_label.config(text=f"Predicted Digit: {digit}", fg="green", font=("Arial", 12, "bold"))
+        digit, confidence = predict_digit_from_binary(binary, self.dataset)
+        confidence_percent = round(confidence * 100, 2)
+        self.result_label.config(
+          text=f"Predicted Digit: {digit} (Confidence: {confidence_percent}%)",
+          fg="green",
+          font=("Arial", 12, "bold")
+        )
 
     def run(self):
         self.window.mainloop()
