@@ -16,6 +16,25 @@ class DigitDataCollectorApp:
         control_frame = tk.Frame(main_frame)
         control_frame.pack(side=tk.RIGHT, padx=10, fill=tk.Y)
         
+        # Language selection frame
+        language_frame = tk.LabelFrame(control_frame, text="Select Language")
+        language_frame.pack(pady=10, fill=tk.X)
+        
+        self.language = tk.StringVar(value="en")
+        language_buttons = tk.Frame(language_frame)
+        language_buttons.pack(pady=5)
+        
+        tk.Radiobutton(
+            language_buttons, text="English", variable=self.language,
+            value="en", command=self.update_counter
+        ).pack(side=tk.LEFT, padx=5)
+        
+        tk.Radiobutton(
+            language_buttons, text="Bangla", variable=self.language,
+            value="bn", command=self.update_counter
+        ).pack(side=tk.LEFT, padx=5)
+        
+        # Digit selection frame
         label_frame = tk.LabelFrame(control_frame, text="Select Digit")
         label_frame.pack(pady=10, fill=tk.X)
         
@@ -131,7 +150,8 @@ class DigitDataCollectorApp:
             return
             
         label = self.label.get()
-        folder_path = f"dataset/{label}"
+        language = self.language.get()
+        folder_path = f"dataset/{language}/{label}"
         os.makedirs(folder_path, exist_ok=True)
         
         existing_files = os.listdir(folder_path)
@@ -149,7 +169,8 @@ class DigitDataCollectorApp:
         img_to_save = img_to_save.convert("L")  
         img_to_save.save(filename)
         
-        self.show_status(f"Saved to {filename}", "green")
+        lang_name = "English" if language == "en" else "Bangla"
+        self.show_status(f"Saved to {lang_name}/{label}/{next_num}.png", "green")
         self.clear_canvas()
         self.update_counter()
     
@@ -185,14 +206,16 @@ class DigitDataCollectorApp:
     
     def update_counter(self):
         label = self.label.get()
-        folder_path = f"dataset/{label}"
+        language = self.language.get()
+        folder_path = f"dataset/{language}/{label}"
         
         if os.path.exists(folder_path):
             count = len([f for f in os.listdir(folder_path) if f.endswith('.png')])
         else:
             count = 0
-            
-        self.counter_var.set(f"Digit {label}: {count} images")
+        
+        lang_name = "English" if language == "en" else "Bangla"
+        self.counter_var.set(f"{lang_name} Digit {label}: {count} images")
 
 root = tk.Tk()
 app = DigitDataCollectorApp(root)
