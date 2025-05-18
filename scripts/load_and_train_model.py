@@ -105,3 +105,7 @@ def train_and_evaluate():
     print("\n📊 Classification Report:\n", classification_report(y_test, y_pred))
 
 train_and_evaluate()
+<<<<<<< HEAD
+=======
+
+>>>>>>> 308997de (added)
